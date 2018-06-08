@@ -15,6 +15,8 @@ from sklearn.decomposition import PCA, SparsePCA, TruncatedSVD
 from sklearn.feature_extraction.text import (CountVectorizer, TfidfTransformer,
                                              TfidfVectorizer)
 
+from sklearn.metrics.pairwise import cosine_similarity
+
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
@@ -53,7 +55,38 @@ for document in corpus:
 
     filtered_corpus.append(' '.join(filtered_document))
 
+    filtered_document = []
 
 
+'''
+Now we will use sklearn to convert our filtered corpus
+into a document-term frequency matrix (counts matrix).
+'''
 
+vectorizer = CountVectorizer()
+
+counts_matrix = vectorizer.fit_transform(filtered_corpus)
+
+#Get feature names
+feature_names = vectorizer.get_feature_names()
+
+#Put the counts matrix into a data frame
+count_matrix_df = pd.DataFrame(counts_matrix.toarray(), columns=feature_names)
+count_matrix_df.index = ['Document 1','Document 2','Document 3','Document 4']
+
+print("Word frequency matrix: \n", count_matrix_df)
+
+'''
+The next step is to convert our term-document frequency
+matrix into a term frequency inverse document frequency
+matrix (tfidf).
+'''
+
+transformer = TfidfTransformer()
+tfidf_matrix = transformer.fit_transform(counts_matrix)
+tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
+tfidf_df.index = ['D1','D2','D3','D4']
+
+print("Tfidf matrix shape: ", tfidf_df.shape)
+print("Tfidf matrix: \n", tfidf_df)
 
